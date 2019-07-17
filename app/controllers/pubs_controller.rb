@@ -1,8 +1,16 @@
 class PubsController < ApplicationController
   skip_before_action :authenticate_user!, only: :index
-  
+
   def index
-    @pubs = Pub.all
+    @pubs = Pub.where.not(latitude: nil, longitude: nil)
+
+    @markers = @pubs.map do |pub|
+      {
+        lat: pub.latitude,
+        lng: pub.longitude,
+        infoWindow: render_to_string(partial: "infowindow", locals: { pub: pub })
+      }
+    end
   end
 
   def new
